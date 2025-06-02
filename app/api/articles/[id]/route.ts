@@ -32,3 +32,23 @@ export async function GET(
     return new NextResponse("Server Error", { status: 500 });
   }
 }
+export async function PUT(req: Request, context: { params: { id: string } }) {
+  const { id } = context.params;
+  const body = await req.json();
+
+  try {
+    const updated = await db.article.update({
+      where: { id: Number(id) },
+      data: {
+        isBucketed: body.isBucketed,
+        Interesting: body.Interesting,
+        updatedAt: new Date(),
+      },
+    });
+
+    return NextResponse.json(updated);
+  } catch (err) {
+    console.error("❌ Failed to update article:", err);
+    return new NextResponse("Server Error", { status: 500 });
+  }
+}

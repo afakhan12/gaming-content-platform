@@ -8,14 +8,36 @@ export async function GET() {
         createdAt: "desc",
       },
     });
+    const parsed = articles.map((article) => {
+      let parsedOriginalText: string[] = [];
 
-    const parsed = articles.map((article) => ({
-      ...article,
-      originalText: article.originalText ? JSON.parse(article.originalText) : [],
-      // ✅ These are plain strings, don't parse:
-      translatedX: article.translatedX || "",
-      translatedFacebook: article.translatedFacebook || "",
-    }));
+      try {
+        parsedOriginalText = article.originalText
+          ? typeof article.originalText === "string"
+            ? JSON.parse(article.originalText)
+            : article.originalText
+          : [];
+      } catch (e) {
+        console.warn(`⚠️ Could not parse originalText for article ID ${article.id}`);
+      }
+
+      return {
+        id: article.id,
+        title: article.title,
+        sourceUrl: article.sourceUrl,
+        localImagePath: article.localImagePath,
+        imageUrl: article.imageUrl,
+        author: article.author,
+        createdAt: article.createdAt,
+        pubDate: article.pubDate,
+        updatedAt: article.updatedAt,
+        originalText: parsedOriginalText,
+        translatedX: article.translatedX || "",
+        translatedFacebook: article.translatedFacebook || "",
+        isBucketed: article.isBucketed,
+        Interesting: article.Interesting,
+      };
+    });
 
     return NextResponse.json(parsed);
   } catch (err) {

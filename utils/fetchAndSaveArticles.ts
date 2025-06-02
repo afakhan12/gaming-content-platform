@@ -37,6 +37,7 @@ async function downloadImage(url: string, id: string): Promise<string | null> {
     return null;
   }
 }
+
 function normalizeTitle(raw: any): string {
   if (typeof raw === "string") return raw;
   if (typeof raw === "object" && raw["#text"]) return raw["#text"];
@@ -50,6 +51,7 @@ function normalizeAuthor(raw: any): string {
   if (typeof raw === "object" && raw["#text"]) return raw["#text"];
   return "Unknown";
 }
+
 interface Article {
   id: number;
   title: string;
@@ -62,6 +64,8 @@ interface Article {
   localImagePath: string;
   author: string;
   createdAt: Date;
+  isBucketed: boolean;
+  Interesting: boolean;
 }
 
 export async function fetchAndSaveArticles(): Promise<Article[]> {
@@ -78,18 +82,16 @@ export async function fetchAndSaveArticles(): Promise<Article[]> {
         const item = items[i];
         const link = item.link?.["@_href"] || item.link || item.id;
 
-        // Skip if already in DB
         const exists = await db.article.findFirst({ where: { sourceUrl: link } });
         if (exists) continue;
 
-        const contentHtml =
-          item["content:encoded"] || item["content"] || item["description"] || "";
+        const contentHtml = item["content:encoded"] || item["content"] || item["description"] || "";
         const $ = cheerio.load(contentHtml);
 
         const paragraphs: string[] = [];
         $("p").each((_, el) => {
           const text = $(el).text().trim();
-          if (text) paragraphs.push(text);
+          if (text && text.toLowerCase() !== "read more...") paragraphs.push(text);
         });
 
         const imageUrl =
@@ -102,6 +104,7 @@ export async function fetchAndSaveArticles(): Promise<Article[]> {
         const localImagePath = imageUrl ? await downloadImage(imageUrl, id) : null;
         const title = normalizeTitle(item.title);
         const author = normalizeAuthor(item["dc:creator"] || item.author);
+
         const article = await db.article.create({
           data: {
             sourceUrl: link,
@@ -110,17 +113,17 @@ export async function fetchAndSaveArticles(): Promise<Article[]> {
             imageUrl,
             localImagePath,
             author: author || "Unknown",
+            pubDate: item.pubDate || item.updated || new Date().toISOString(),
             createdAt: new Date(),
-  
+            translatedFacebook: null,
+            translatedX: null,
+            isBucketed: false,
+            Interesting: true,
           },
         });
 
-        
-
         insertedArticles.push(article);
-        console.log(`✅ Saved: ${item.title}`);
-
-        
+        console.log(`✅ Saved: ${title}`);
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -130,7 +133,16 @@ export async function fetchAndSaveArticles(): Promise<Article[]> {
       }
     }
   }
-
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  await db.article.deleteMany({
+    where: {
+      createdAt: {
+        lt: today,
+      },
+    },
+  });
+  console.log(`🗑️ Deleted articles older than today: ${insertedArticles.length}`);
   return insertedArticles.map((article) => ({
     id: article.id,
     title: article.title,
@@ -143,5 +155,7 @@ export async function fetchAndSaveArticles(): Promise<Article[]> {
     author: article.author ?? "",
     pubDate: article.pubDate ?? "",
     createdAt: article.createdAt,
+    isBucketed: article.isBucketed,
+    Interesting: article.Interesting,
   }));
 }

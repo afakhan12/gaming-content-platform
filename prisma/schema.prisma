@@ -24,4 +24,7 @@ model Article {
   postedToFacebook   Boolean  @default(false)
   postedToX          Boolean  @default(false)
   createdAt          DateTime @default(now())
+  updatedAt        DateTime? @updatedAt
+  Interesting      Boolean   @default(true) // for "Not Interesting"
+  isBucketed       Boolean   @default(false) // for bucketed queue
 }

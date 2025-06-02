@@ -5,7 +5,6 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Utility to extract the first valid JSON array block from GPT response
 function extractJsonArray(text: string): string | null {
   const match = text.match(/\[\s*{[\s\S]*?}\s*\]/);
   return match ? match[0] : null;
@@ -14,6 +13,7 @@ function extractJsonArray(text: string): string | null {
 export async function translateWithOpenAI() {
   const articles = await db.article.findMany({
     where: {
+      isBucketed: true,
       translatedFacebook: null,
       translatedX: null,
     },
@@ -21,7 +21,7 @@ export async function translateWithOpenAI() {
   });
 
   if (articles.length === 0) {
-    console.log("📭 No new articles to translate.");
+    console.log("📭 No bucketed articles to translate.");
     return;
   }
 
@@ -59,18 +59,14 @@ ${JSON.stringify(inputPayload, null, 2)}
     });
 
     const rawContent = completion.choices[0].message?.content || "";
-
     const jsonPart = extractJsonArray(rawContent);
     if (!jsonPart) {
-      console.error("❌ No valid JSON found. GPT response was:\n", rawContent);
+      console.error("❌ No valid JSON found. GPT response:\n", rawContent);
       return;
     }
 
     const parsed = JSON.parse(jsonPart);
-
-    if (!Array.isArray(parsed)) {
-      throw new Error("❌ GPT response was not an array");
-    }
+    if (!Array.isArray(parsed)) throw new Error("❌ GPT response is not a valid array");
 
     for (const item of parsed) {
       if (!item.id || !item.facebook || !item.twitter) continue;
@@ -80,13 +76,16 @@ ${JSON.stringify(inputPayload, null, 2)}
         data: {
           translatedFacebook: item.facebook,
           translatedX: item.twitter,
+          isBucketed: false,
+          Interesting: false,
+          updatedAt: new Date(),
         },
       });
 
-      console.log(`✅ Updated article #${item.id} with translations.`);
+      console.log(`✅ Translated & cleared bucket for article #${item.id}`);
     }
 
-    console.log("🎉 All top articles translated and saved.");
+    console.log("🎉 Translations completed and articles updated.");
   } catch (err) {
     console.error("❌ OpenAI translation failed:", err);
   }
