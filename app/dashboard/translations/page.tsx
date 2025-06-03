@@ -1,6 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
+// Helper to POST to publish endpoints
+async function publishTo(platform: "facebook" | "x", id: number) {
+  const res = await fetch(`/api/post-to-${platform}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id }),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    alert(`❌ Failed to post to ${platform.toUpperCase()}:\n${err}`);
+    return false;
+  }
+  return true;
+}
 
 type Article = {
   id: number;

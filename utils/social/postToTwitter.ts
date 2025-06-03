@@ -1,19 +1,24 @@
-export async function postToTwitter(text: string) {
-  const token = process.env.TWITTER_BEARER_TOKEN;
+import { TwitterApi } from 'twitter-api-v2';
+import fs from 'fs';
 
-  const res = await fetch("https://api.twitter.com/2/tweets", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ text }),
+const twitterClient = new TwitterApi({
+  appKey: process.env.TWITTER_API_KEY!,
+  appSecret: process.env.TWITTER_API_SECRET!,
+  accessToken: process.env.TWITTER_ACCESS_TOKEN!,
+  accessSecret: process.env.TWITTER_ACCESS_SECRET!,
+});
+
+export async function postToTwitter({ text, imagePath, translatedX }: { text: string; imagePath: string; translatedX: string }) {
+  const client = twitterClient.readWrite;
+
+  // Upload media from local path
+  const mediaId = await client.v1.uploadMedia(fs.readFileSync(imagePath), { mimeType: 'image/jpeg' });
+
+  // Post tweet with image and Arabic translation
+  const tweet = await client.v2.tweet({
+    text: `${text}\n\n${translatedX}`,
+    media: { media_ids: [mediaId] },
   });
 
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(`Twitter Post Failed: ${JSON.stringify(data)}`);
-  }
-
-  console.log("✅ Posted to Twitter:", data.data?.id);
+  console.log("✅ Tweeted:", tweet.data?.id);
 }
