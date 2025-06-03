@@ -135,14 +135,51 @@ export async function fetchAndSaveArticles(): Promise<Article[]> {
   }
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  
+  // Get articles that will be deleted (only untranslated ones)
+  const articlesToDelete = await db.article.findMany({
+    where: {
+      createdAt: {
+        lt: today,
+      },
+      AND: [
+        { translatedX: null },
+        { translatedFacebook: null }
+      ]
+    },
+    select: {
+      localImagePath: true,
+    },
+  });
+
+  // Delete associated images
+  for (const article of articlesToDelete) {
+    if (article.localImagePath) {
+      const imagePath = path.join(process.cwd(), 'public', article.localImagePath);
+      try {
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+          console.log(`🗑️ Deleted image: ${article.localImagePath}`);
+        }
+      } catch (err) {
+        console.error(`❌ Failed to delete image ${article.localImagePath}:`, err);
+      }
+    }
+  }
+
+  // Delete only untranslated articles
   await db.article.deleteMany({
     where: {
       createdAt: {
         lt: today,
       },
+      AND: [
+        { translatedX: null },
+        { translatedFacebook: null }
+      ]
     },
   });
-  console.log(`🗑️ Deleted articles older than today: ${insertedArticles.length}`);
+  console.log(`🗑️ Deleted untranslated articles older than today: ${insertedArticles.length}`);
   return insertedArticles.map((article) => ({
     id: article.id,
     title: article.title,

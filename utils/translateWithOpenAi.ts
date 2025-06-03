@@ -31,17 +31,16 @@ export async function translateWithOpenAI() {
     originalText: JSON.parse(a.originalText || "[]"),
     author: a.author || "Unknown",
   }));
+  console.log(`📦 Preparing to translate ${inputPayload.length} articles...`);
 
   const prompt = `
-I want you to choose top 5 articles relevant to the day (make sure they're fresh news) from the JSON below, which you feel are most likely to generate engagement on the page.
-
-Then, rephrase them as Facebook and Twitter posts in **Arabic**, making them easy to read and engaging.
+I want you to rephrase articles as Facebook and Twitter posts in **Arabic**, making them easy to read and engaging.
 
 ⚠️ Respond ONLY with a **JSON array** in the following format (no extra text or explanation):
 
 [
   {
-    "id": 1,
+    "id": the article ID,
     "facebook": "Arabic Facebook post here...",
     "twitter": "Arabic Twitter post here..."
   }
@@ -90,3 +89,4 @@ ${JSON.stringify(inputPayload, null, 2)}
     console.error("❌ OpenAI translation failed:", err);
   }
 }
+translateWithOpenAI();

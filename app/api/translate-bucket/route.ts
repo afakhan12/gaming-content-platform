@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { translateWithOpenAI } from "@/utils/translateWithOpenAI";
+import { translateWithOpenAI } from "../../../utils/translateWithOpenAI";
 
 export async function POST() {
   try {
