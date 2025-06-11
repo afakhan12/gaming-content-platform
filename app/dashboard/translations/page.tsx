@@ -37,7 +37,9 @@ export default function TranslationsDashboard() {
   }, []);
 
   const markPosted = async (id: number, platform: "facebook" | "x") => {
-    await fetch(`/api/articles/mark-posted`, {
+     const ok = await publishTo(platform, id); // 🔄 Triggers actual post to platform
+    if (!ok) return;
+    await fetch(`/api/articles/posted`, {
       method: "POST",
       body: JSON.stringify({ id, platform }),
     });

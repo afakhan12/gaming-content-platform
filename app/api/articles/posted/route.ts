@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import db from "@/db/db";
 
 export async function GET() {
@@ -12,4 +12,23 @@ export async function GET() {
   });
 
   return NextResponse.json(translated);
+}
+
+export async function POST(req: NextRequest) {
+  const { id, platform } = await req.json();
+
+  if (!id || !platform) {
+    return new NextResponse("Missing id or platform", { status: 400 });
+  }
+
+  const updateData: any = {};
+  if (platform === "facebook") updateData.postedToFacebook = true;
+  if (platform === "x") updateData.postedToX = true;
+
+  await db.article.update({
+    where: { id },
+    data: updateData,
+  });
+
+  return NextResponse.json({ success: true });
 }
