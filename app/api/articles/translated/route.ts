@@ -6,8 +6,7 @@ export async function GET() {
     where: {
       translatedFacebook: { not: null },
       translatedX: { not: null },
-      postedToFacebook: false,
-      postedToX: false,
+      
     },
     orderBy: { createdAt: "desc" },
   });

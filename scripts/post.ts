@@ -1,37 +1,29 @@
-// app/api/test-facebook/route.ts
-import { NextResponse } from "next/server";
+import fetch from "node-fetch";
+import "dotenv/config";
 
-export async function GET() {
+const PAGE_ID = process.env.FB_PAGE_ID;
+const PAGE_TOKEN = process.env.FB_PAGE_ACCESS_TOKEN; // This needs to be the PAGE-SPECIFIC token
+
+async function postToFacebook() {
   try {
-    if (!process.env.FB_PAGE_ID || !process.env.FB_PAGE_ACCESS_TOKEN) {
-      throw new Error("Missing Facebook environment variables");
-    }
-
-    const url = `https://graph.facebook.com/${process.env.FB_PAGE_ID}/feed`;
-    
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const res = await fetch(`https://graph.facebook.com/${PAGE_ID}/feed`, {
+      method: "POST", // Correct for posting
+      headers: { "Content-Type": "application/json" }, // Correct header
       body: JSON.stringify({
-        message: "✅ Test post from API route - " + new Date().toISOString(),
-        access_token: process.env.FB_PAGE_ACCESS_TOKEN,
+        message: "✅ Test post from Node.js script using Page token", // Correct parameter for text posts
+        access_token: PAGE_TOKEN, // Correct way to pass the token
       }),
     });
 
+    const data = await res.json();
     if (!res.ok) {
-      const errorData = await res.json();
-      throw new Error(`Facebook API error: ${JSON.stringify(errorData)}`);
+      throw new Error(JSON.stringify(data)); // Good error handling
     }
 
-    const data = await res.json();
-    console.log("Facebook post successful:", data);
-    return NextResponse.json(data);
-    
-  } catch (error: any) {
-    console.error("Facebook posting failed:", error.message);
-    return NextResponse.json(
-      { error: error.message || "Failed to post to Facebook" },
-      { status: 500 }
-    );
+    console.log("✅ Posted to Facebook:", data);
+  } catch (err) {
+    console.error("❌ Facebook post failed:", err);
   }
 }
+
+postToFacebook();
