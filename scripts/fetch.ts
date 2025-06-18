@@ -1,5 +1,5 @@
 import { fetchAndSaveArticles } from "../utils/fetchAndSaveArticles";
-import { translateWithOpenAI } from "../utils/translateWithOpenAI";
+import { translateWithOpenAI } from "../utils/translateWithOpenAi";
 
 
 (async () => {
