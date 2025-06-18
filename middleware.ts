@@ -17,7 +17,7 @@ async function IsAuthenticated(req: NextRequest) {
     return username === process.env.ADMIN_USERNAME && (await isValidPassword(password, process.env.HASHED_ADMIN_PASSWORD as string))
     
 }
-export const runtime = 'edge';
+export const runtime = 'experimental-edge';
 // Protect all /dashboard routes
 export const config = {
   matcher: ["/dashboard/:path*", "/api/post-to-facebook", "/api/post-to-x"],
