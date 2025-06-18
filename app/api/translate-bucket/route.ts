@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { translateWithOpenAi } from "../../../utils/translateWithOpenAi";
+import { translateWithOpenAI } from "../../../utils/translateWithOpenAi";
 
 export async function POST() {
   try {
-    await translateWithOpenAi();
+    await translateWithOpenAI();
     return NextResponse.json({ message: "Translation started." });
   } catch (err) {
     console.error("❌ Failed to trigger translation:", err);
