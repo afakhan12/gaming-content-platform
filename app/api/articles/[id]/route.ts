@@ -3,11 +3,12 @@ import db from "@/db/db";
 
 // GET handler for fetching a single article by ID.
 // The first argument is the NextRequest object.
-// The second argument is an object containing 'params',
-// which holds the dynamic route segments like 'id'.
+// The second argument is directly the 'params' object,
+// containing dynamic route segments like 'id'.
+// This is an an alternative typing approach to try and resolve persistent build errors.
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } } // Inline type for dynamic params
+  params: { id: string } // Direct type for params object
 ) {
   // Convert the 'id' parameter from string (as it comes from the URL) to a number.
   const id = Number(params.id);
@@ -44,11 +45,12 @@ export async function GET(
 
 // PUT handler for updating an article by ID.
 // The first argument is the NextRequest object.
-// The second argument is an object containing 'params',
-// which holds the dynamic route segments like 'id'.
+// The second argument is directly the 'params' object,
+// containing dynamic route segments like 'id'.
+// This is an an alternative typing approach to try and resolve persistent build errors.
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } } // Inline type for dynamic params
+  params: { id: string } // Direct type for params object
 ) {
   // Convert the 'id' parameter from string to a number.
   const id = Number(params.id);
