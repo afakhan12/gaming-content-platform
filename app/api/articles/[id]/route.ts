@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/db/db";
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-  const id = Number(params.id);
+export async function GET(request: NextRequest, context: { params: { id: string } }) {
+  const id = Number(context.params.id);
 
   try {
     const article = await db.article.findUnique({
