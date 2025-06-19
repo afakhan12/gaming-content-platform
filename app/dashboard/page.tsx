@@ -69,6 +69,7 @@ export default function DashboardPage() {
                 alt="Article"
                 className="mt-2 max-w-xs border rounded"
                 width={400}
+                priority={true}
                 height={225}
                 style={{ width: "100%", height: "auto" }}
               />
