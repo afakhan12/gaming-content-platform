@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/db/db";
 
-// ✅ Correct context param for dynamic routes in Next.js App Router
-type Params = {
+// ✅ Correct type definition for the second argument of route handlers
+// This interface defines the *structure* of the second argument
+interface RouteContext {
   params: {
     id: string;
   };
-};
+}
 
 // GET handler
-export async function GET(_req: NextRequest, { params }: Params) {
-  const id = Number(params.id);
+export async function GET(_req: NextRequest, context: RouteContext) {
+  const id = Number(context.params.id); // Access id from context.params
 
   try {
     const article = await db.article.findUnique({
@@ -36,8 +37,8 @@ export async function GET(_req: NextRequest, { params }: Params) {
 }
 
 // PUT handler
-export async function PUT(req: NextRequest, { params }: Params) {
-  const id = Number(params.id);
+export async function PUT(req: NextRequest, context: RouteContext) {
+  const id = Number(context.params.id); // Access id from context.params
   const body = await req.json();
 
   try {
