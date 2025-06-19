@@ -34,28 +34,26 @@ export async function translateWithOpenAI() {
   console.log(`📦 Preparing to translate ${inputPayload.length} articles...`);
 
   const prompt = `
-I want you to rephrase articles as Facebook and Twitter posts in *Arabic*, making them easy to read and engaging.
+I want you to rephrase articles as Facebook and Twitter posts in *Arabic*, using a Gulf (Khaleeji) tone that feels natural, friendly, and engaging.
 
 Your task:
 1. Read and understand each article in the provided JSON.
 2. Extract the key points and rewrite them in Arabic.
-3. The Arabic content must be well-written, not a direct translation.
-4. The Facebook post can be a bit longer and informative.
-5. The Twitter post must be short, attention-grabbing, and under 280 characters.
-6. Use a natural, reader-friendly tone, not too formal, not too slangy.
-7. Do NOT include hashtags, links, or any extra explanation.
+3. The Arabic content must be well-written and *not a direct translation*.
+4. The *Facebook post should be longer, with more context and storytelling. Use a tone that feels casual and informative — as if you're talking to friends from the Gulf region. End the post with a **question to encourage interaction, and include **1–2 relevant Arabic hashtags* only.
+5. The *Twitter post must be short, catchy, and under 280 characters* — with a clear takeaway or interesting twist. End with a *question* and *1–2 Arabic hashtags* only.
+6. Use simple, clear language in a friendly Gulf Arabic tone (Fusha with Khaleeji flavour). Avoid formal or robotic phrasing.
+7. Do NOT include links or any extra explanation.
 
 ⚠ Respond ONLY with a *JSON array* in the following format (no extra text or explanation):
 
 [
   {
     "id": the article ID,
-    "facebook": "Arabic Facebook post here...",
-    "twitter": "Arabic Twitter post here..."
+    "facebook": "Longer Arabic Facebook post here with a question and hashtags...",
+    "twitter": "Short Arabic Twitter post here with a question and hashtags..."
   }
 ]
-
-
 Here is the JSON:
 ${JSON.stringify(inputPayload, null, 2)}
 `;
