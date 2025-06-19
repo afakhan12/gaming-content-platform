@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/db/db";
 
-export async function GET(request: NextRequest, context: { params: { id: string } }) {
-  const id = Number(context.params.id);
 
+// GET handler for fetching a single article by ID.
+interface RouteContext {
+  params: {
+    id: string; // 'id' corresponds to the [id] dynamic segment in the route
+  };
+}
+
+// GET handler
+export async function GET(_req: NextRequest, { params }: RouteContext) {
+  const id = Number(params.id);
   try {
     const article = await db.article.findUnique({
       where: { id },
@@ -27,9 +35,10 @@ export async function GET(request: NextRequest, context: { params: { id: string 
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+// PUT handler for updating an article by ID.
+export async function PUT(req: NextRequest, { params }: RouteContext) {
   const id = Number(params.id);
-  const body = await request.json();
+  const body = await req.json();
 
   try {
     const updated = await db.article.update({
