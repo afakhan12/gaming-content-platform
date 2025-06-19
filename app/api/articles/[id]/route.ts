@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/db/db";
 
-// ✅ Valid GET with proper request and context signature
-export async function GET(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
-  const { id } = context.params;
+// ✅ Correct context param for dynamic routes in Next.js App Router
+type Params = {
+  params: {
+    id: string;
+  };
+};
+
+// GET handler
+export async function GET(_req: NextRequest, { params }: Params) {
+  const id = Number(params.id);
 
   try {
     const article = await db.article.findUnique({
-      where: { id: Number(id) },
+      where: { id },
     });
 
     if (!article) {
@@ -19,9 +23,7 @@ export async function GET(
 
     const parsed = {
       ...article,
-      originalText: article.originalText
-        ? JSON.parse(article.originalText)
-        : [],
+      originalText: article.originalText ? JSON.parse(article.originalText) : [],
       translatedX: article.translatedX || "",
       translatedFacebook: article.translatedFacebook || "",
     };
@@ -33,18 +35,14 @@ export async function GET(
   }
 }
 
-// ✅ Valid PUT with proper request and context signature
-export async function PUT(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
-  const { id } = context.params;
+// PUT handler
+export async function PUT(req: NextRequest, { params }: Params) {
+  const id = Number(params.id);
+  const body = await req.json();
 
   try {
-    const body = await req.json();
-
     const updated = await db.article.update({
-      where: { id: Number(id) },
+      where: { id },
       data: {
         isBucketed: body.isBucketed,
         Interesting: body.Interesting,
