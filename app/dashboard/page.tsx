@@ -64,10 +64,13 @@ export default function DashboardPage() {
             <p className="text-sm text-gray-500">{new Date(article.createdAt).toLocaleString()}</p>
             <p className="text-sm break-all text-blue-600 mt-1">{article.sourceUrl}</p>
             {article.localImagePath && (
-              <img
+              <Image
                 src={article.localImagePath}
                 alt="Article"
                 className="mt-2 max-w-xs border rounded"
+                width={400}
+                height={225}
+                style={{ width: "100%", height: "auto" }}
               />
             )}
             <div className="mt-4">
