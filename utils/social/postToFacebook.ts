@@ -7,7 +7,7 @@ export async function postToFacebook({ title, imageUrl, translatedFacebook }: { 
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       url: imageUrl, // full URL to image (e.g. https://yourdomain.com/images/xyz.jpg)
-      caption: `${title}\n\n${translatedFacebook}`,
+      caption: `${translatedFacebook}`,
       access_token: token,
     }),
   });

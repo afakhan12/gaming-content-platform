@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
+import axios from "axios";
 
 type Article = {
   id: number;
@@ -15,12 +17,20 @@ type Article = {
 
 export default function PostedDashboard() {
   const [articles, setArticles] = useState<Article[]>([]);
+  const [loadingId, setLoadingId] = useState<number | null>(null);
 
   useEffect(() => {
     fetch("/api/articles/posted")
       .then(res => res.json())
       .then(setArticles);
   }, []);
+
+  const archiveArticle = async (id: number) => {
+    setLoadingId(id);
+    await axios.put(`/api/articles/${id}`, { Interesting: false });
+    setArticles(prev => prev.filter(a => a.id !== id));
+    setLoadingId(null);
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -31,9 +41,11 @@ export default function PostedDashboard() {
           <h2 className="text-lg font-semibold">{article.title}</h2>
 
           {article.localImagePath && (
-            <img
+            <Image
               src={article.localImagePath}
               alt="Article"
+              width={600}
+              height={400}
               className="w-full max-w-md h-auto rounded shadow-md"
             />
           )}
@@ -56,12 +68,13 @@ export default function PostedDashboard() {
           </div>
 
           <div className="flex gap-4">
-            <div className="px-3 py-1 bg-blue-600 text-white rounded">
-              ✅ Posted to Facebook
-            </div>
-            <div className="px-3 py-1 bg-black text-white rounded">
-              ✅ Posted to X
-            </div>
+            <button
+              onClick={() => archiveArticle(article.id)}
+              disabled={!!(loadingId === article.id)}
+              className="px-3 py-1 bg-gray-600 text-white rounded transition-colors duration-200 hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              {loadingId === article.id ? "Archiving..." : "Archive"}
+            </button>
           </div>
         </div>
       ))}

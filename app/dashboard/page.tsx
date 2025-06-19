@@ -17,6 +17,7 @@ export default function DashboardPage() {
   const [articles, setArticles] = useState<any[]>([])
   const [loading, setLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
+  const [loadingId, setLoadingId] = useState<number | null>(null);
 
   const handleRefetch = () => {
     startTransition(async () => {
@@ -35,11 +36,13 @@ export default function DashboardPage() {
   }, [])
 
   const updateArticle = async (id: number, action: 'bucket' | 'ignore') => {
+    setLoadingId(id);
     await axios.put(`/api/articles/${id}`, {
       isBucketed: action === 'bucket',
       Interesting: action !== 'ignore'
-    })
-    setArticles(prev => prev.filter(a => a.id !== id))
+    });
+    setArticles(prev => prev.filter(a => a.id !== id));
+    setLoadingId(null);
   }
 
   if (loading) return <p className="p-4">Loading...</p>;
@@ -74,9 +77,21 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="mt-4 flex gap-4">
-            <button onClick={() => updateArticle(article.id, 'bucket')} className="bg-green-600 text-white px-4 py-2 rounded">Add to Bucket</button>
-            <button onClick={() => updateArticle(article.id, 'ignore')} className="bg-red-600 text-white px-4 py-2 rounded">Not Interesting</button>
-          </div>
+              <button
+                onClick={() => updateArticle(article.id, 'bucket')}
+                className={`bg-green-600 text-white px-4 py-2 rounded transition-colors duration-200 hover:bg-green-700 disabled:bg-green-300 disabled:cursor-not-allowed`}
+                disabled={loadingId === article.id}
+              >
+                {loadingId === article.id ? "Adding..." : "Add to Bucket"}
+              </button>
+              <button
+                onClick={() => updateArticle(article.id, 'ignore')}
+                className={`bg-red-600 text-white px-4 py-2 rounded transition-colors duration-200 hover:bg-red-700 disabled:bg-red-300 disabled:cursor-not-allowed`}
+                disabled={loadingId === article.id}
+              >
+                {loadingId === article.id ? "Removing..." : "Not Interesting"}
+              </button>
+            </div>
           </div>
         ))}
       </div>

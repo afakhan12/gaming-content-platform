@@ -7,6 +7,7 @@ export async function GET() {
       
       postedToFacebook: true,
       postedToX: true,
+      Interesting: true,
     },
     orderBy: { createdAt: "desc" },
   });

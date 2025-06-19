@@ -1,4 +1,3 @@
-
 'use client'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
@@ -6,6 +5,7 @@ import axios from 'axios'
 
 export default function BucketPage() {
   const [articles, setArticles] = useState<any[]>([])
+  const [unbucketingId, setUnbucketingId] = useState<number | null>(null);
 
   useEffect(() => {
     axios.get('/api/articles')
@@ -29,13 +29,25 @@ export default function BucketPage() {
     }
   };
 
+  const handleUnbucket = async (id: number) => {
+    setUnbucketingId(id);
+    try {
+      await axios.put(`/api/articles/${id}`, { isBucketed: false });
+      setArticles(prev => prev.filter(a => a.id !== id));
+    } catch (err) {
+      // Optionally handle error
+    } finally {
+      setUnbucketingId(null);
+    }
+  };
+
   return (
     <div className="p-4 space-y-6">
       <h1 className="text-2xl font-bold">Bucket Queue</h1>
       <button
         onClick={handleTranslate}
         disabled={translating}
-        className="bg-blue-600 text-white px-4 py-2 rounded mb-4"
+        className="bg-blue-600 text-white px-4 py-2 rounded mb-4 transition-colors duration-200 hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed"
       >
         {translating ? "Translating..." : "Translate Bucketed Articles"}
       </button>
@@ -65,6 +77,13 @@ export default function BucketPage() {
               })()}
             </pre>
           </div>
+          <button
+            onClick={() => handleUnbucket(article.id)}
+            disabled={unbucketingId === article.id}
+            className="bg-red-600 text-white px-4 py-2 rounded transition-colors duration-200 hover:bg-red-700 disabled:bg-red-300 disabled:cursor-not-allowed mt-2"
+          >
+            {unbucketingId === article.id ? "Unbucketing..." : "Unbucket"}
+          </button>
         </div>
       ))}
     </div>

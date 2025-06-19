@@ -34,9 +34,18 @@ export async function translateWithOpenAI() {
   console.log(`📦 Preparing to translate ${inputPayload.length} articles...`);
 
   const prompt = `
-I want you to rephrase articles as Facebook and Twitter posts in **Arabic**, making them easy to read and engaging.
+I want you to rephrase articles as Facebook and Twitter posts in *Arabic*, making them easy to read and engaging.
 
-⚠️ Respond ONLY with a **JSON array** in the following format (no extra text or explanation):
+Your task:
+1. Read and understand each article in the provided JSON.
+2. Extract the key points and rewrite them in Arabic.
+3. The Arabic content must be well-written, not a direct translation.
+4. The Facebook post can be a bit longer and informative.
+5. The Twitter post must be short, attention-grabbing, and under 280 characters.
+6. Use a natural, reader-friendly tone, not too formal, not too slangy.
+7. Do NOT include hashtags, links, or any extra explanation.
+
+⚠ Respond ONLY with a *JSON array* in the following format (no extra text or explanation):
 
 [
   {
@@ -45,6 +54,7 @@ I want you to rephrase articles as Facebook and Twitter posts in **Arabic**, mak
     "twitter": "Arabic Twitter post here..."
   }
 ]
+
 
 Here is the JSON:
 ${JSON.stringify(inputPayload, null, 2)}

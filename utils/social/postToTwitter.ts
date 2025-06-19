@@ -22,7 +22,7 @@ export const postToTwitter = async ({
     });
 
     // Concatenate text and translatedX, ensuring it fits within 280 characters.
-    const tweetText = `${text}\n\n${translatedX}`.slice(0, 280);
+    const tweetText = `${translatedX}`.slice(0, 280);
 
     let mediaId: string | undefined; // Initialize mediaId as undefined
 
