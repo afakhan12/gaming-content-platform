@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/db/db";
 
-
-// GET handler for fetching a single article by ID.
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   const id = Number(params.id);
 
   try {
@@ -29,10 +27,9 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
   }
 }
 
-// PUT handler for updating an article by ID.
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   const id = Number(params.id);
-  const body = await req.json();
+  const body = await request.json();
 
   try {
     const updated = await db.article.update({
