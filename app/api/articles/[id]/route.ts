@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/db/db";
+import fs from "fs";
+import path from "path";
 
 // GET handler for fetching a single article by ID
 export async function GET(
@@ -61,6 +63,35 @@ export async function PUT(
     return NextResponse.json(updated);
   } catch (err) {
     console.error("❌ Failed to update article:", err);
+    return new NextResponse("Server Error", { status: 500 });
+  }
+}
+
+// DELETE handler for deleting an article by ID
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const numericId = Number(id);
+    // Find the article to get the image path
+    const article = await db.article.findUnique({ where: { id: numericId } });
+    if (article && article.localImagePath) {
+      const imagePath = path.join(process.cwd(), 'public', article.localImagePath.startsWith('/') ? article.localImagePath.slice(1) : article.localImagePath);
+      try {
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+          console.log(`🗑️ Deleted image: ${article.localImagePath}`);
+        }
+      } catch (err) {
+        console.error(`❌ Failed to delete image ${article.localImagePath}:`, err);
+      }
+    }
+    await db.article.delete({ where: { id: numericId } });
+    return new NextResponse(null, { status: 204 });
+  } catch (err) {
+    console.error("❌ Failed to delete article:", err);
     return new NextResponse("Server Error", { status: 500 });
   }
 }

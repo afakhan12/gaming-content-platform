@@ -10,7 +10,7 @@ export async function GET(
     // Await the params promise
     const { filename } = await params;
     const filePath = path.join(process.cwd(), 'tmp', 'images', filename);
-    console.log(`🔍 Requested: ${filePath}`);
+    
 
     const imageBuffer = fs.readFileSync(filePath);
 

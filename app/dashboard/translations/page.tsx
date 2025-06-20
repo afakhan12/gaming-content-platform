@@ -36,6 +36,7 @@ export default function TranslationsDashboard() {
   const [editState, setEditState] = useState<{id: number, platform: 'x' | 'facebook'} | null>(null);
   const [editValue, setEditValue] = useState("");
   const [editLoading, setEditLoading] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   useEffect(() => {
     fetch("/api/articles/translated")
@@ -64,6 +65,13 @@ export default function TranslationsDashboard() {
     await axios.put(`/api/articles/${id}`, { Interesting: false });
     setArticles(prev => prev.filter(a => a.id !== id));
     setArchiveId(null);
+  };
+
+  const deleteArticle = async (id: number) => {
+    setDeleteId(id);
+    await axios.delete(`/api/articles/${id}`);
+    setArticles(prev => prev.filter(a => a.id !== id));
+    setDeleteId(null);
   };
 
   const startEdit = (id: number, platform: 'x' | 'facebook', current: string) => {
@@ -152,6 +160,13 @@ export default function TranslationsDashboard() {
               className="px-3 py-1 bg-blue-900 text-white rounded transition-colors duration-200 hover:bg-blue-800"
             >
               Update Facebook
+            </button>
+            <button
+              onClick={() => deleteArticle(article.id)}
+              disabled={deleteId === article.id}
+              className="px-3 py-1 bg-gray-800 text-white rounded transition-colors duration-200 hover:bg-black disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              {deleteId === article.id ? "Deleting..." : "Delete"}
             </button>
           </div>
           {editState && editState.id === article.id && (

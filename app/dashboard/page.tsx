@@ -18,6 +18,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
   const [loadingId, setLoadingId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const handleRefetch = () => {
     startTransition(async () => {
@@ -45,6 +46,13 @@ export default function DashboardPage() {
     setLoadingId(null);
   }
 
+  const deleteArticle = async (id: number) => {
+    setDeleteId(id);
+    await axios.delete(`/api/articles/${id}`);
+    setArticles(prev => prev.filter(a => a.id !== id));
+    setDeleteId(null);
+  };
+
   if (loading) return <p className="p-4">Loading...</p>;
 
   return (
@@ -64,7 +72,7 @@ export default function DashboardPage() {
             <p className="text-sm text-gray-500">{new Date(article.createdAt).toLocaleString()}</p>
             <p className="text-sm break-all text-blue-600 mt-1">{article.sourceUrl}</p>
             {article.localImagePath && (
-              <img
+              <Image
                 src={`/api${article.localImagePath}`}
                 alt="Article"
                 className="mt-2 max-w-xs border rounded"
@@ -72,6 +80,8 @@ export default function DashboardPage() {
                 height={225}
                 loading="lazy"
                 style={{ width: "100%", height: "auto" }}
+                unoptimized={true}
+                quality={30}
               />  
               )}
             <div className="mt-4">
@@ -94,6 +104,13 @@ export default function DashboardPage() {
                 disabled={loadingId === article.id}
               >
                 {loadingId === article.id ? "Removing..." : "Not Interesting"}
+              </button>
+              <button
+                onClick={() => deleteArticle(article.id)}
+                className="bg-gray-800 text-white px-4 py-2 rounded transition-colors duration-200 hover:bg-black disabled:bg-gray-400 disabled:cursor-not-allowed"
+                disabled={deleteId === article.id}
+              >
+                {deleteId === article.id ? "Deleting..." : "Delete"}
               </button>
             </div>
           </div>

@@ -18,6 +18,7 @@ type Article = {
 export default function PostedDashboard() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loadingId, setLoadingId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   useEffect(() => {
     fetch("/api/articles/posted")
@@ -30,6 +31,13 @@ export default function PostedDashboard() {
     await axios.put(`/api/articles/${id}`, { Interesting: false });
     setArticles(prev => prev.filter(a => a.id !== id));
     setLoadingId(null);
+  };
+
+  const deleteArticle = async (id: number) => {
+    setDeleteId(id);
+    await axios.delete(`/api/articles/${id}`);
+    setArticles(prev => prev.filter(a => a.id !== id));
+    setDeleteId(null);
   };
 
   return (
@@ -74,6 +82,13 @@ export default function PostedDashboard() {
               className="px-3 py-1 bg-gray-600 text-white rounded transition-colors duration-200 hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               {loadingId === article.id ? "Archiving..." : "Archive"}
+            </button>
+            <button
+              onClick={() => deleteArticle(article.id)}
+              disabled={deleteId === article.id}
+              className="px-3 py-1 bg-gray-800 text-white rounded transition-colors duration-200 hover:bg-black disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              {deleteId === article.id ? "Deleting..." : "Delete"}
             </button>
           </div>
         </div>

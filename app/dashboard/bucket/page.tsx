@@ -6,6 +6,7 @@ import axios from 'axios'
 export default function BucketPage() {
   const [articles, setArticles] = useState<any[]>([])
   const [unbucketingId, setUnbucketingId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   useEffect(() => {
     axios.get('/api/articles')
@@ -39,6 +40,13 @@ export default function BucketPage() {
     } finally {
       setUnbucketingId(null);
     }
+  };
+
+  const handleDelete = async (id: number) => {
+    setDeleteId(id);
+    await axios.delete(`/api/articles/${id}`);
+    setArticles(prev => prev.filter(a => a.id !== id));
+    setDeleteId(null);
   };
 
   return (
@@ -83,6 +91,13 @@ export default function BucketPage() {
             className="bg-red-600 text-white px-4 py-2 rounded transition-colors duration-200 hover:bg-red-700 disabled:bg-red-300 disabled:cursor-not-allowed mt-2"
           >
             {unbucketingId === article.id ? "Unbucketing..." : "Unbucket"}
+          </button>
+          <button
+            onClick={() => handleDelete(article.id)}
+            disabled={deleteId === article.id}
+            className="bg-gray-800 text-white px-4 py-2 rounded transition-colors duration-200 hover:bg-black disabled:bg-gray-400 disabled:cursor-not-allowed mt-2"
+          >
+            {deleteId === article.id ? "Deleting..." : "Delete"}
           </button>
         </div>
       ))}
