@@ -13,7 +13,7 @@ const FEED_URLS = [
   "https://kotaku.com/rss",
 ];
 
-const IMAGE_DIR = path.join(process.cwd(), "public", "images");
+const IMAGE_DIR = path.join(process.cwd(), "tmp", "images");
 if (!fs.existsSync(IMAGE_DIR)) fs.mkdirSync(IMAGE_DIR, { recursive: true });
 
 async function downloadImage(url: string, id: string): Promise<string | null> {
@@ -155,7 +155,7 @@ export async function fetchAndSaveArticles(): Promise<Article[]> {
   // Delete associated images
   for (const article of articlesToDelete) {
     if (article.localImagePath) {
-      const imagePath = path.join(process.cwd(), 'public', article.localImagePath);
+      const imagePath = path.join(process.cwd(), 'tmp', article.localImagePath);
       try {
         if (fs.existsSync(imagePath)) {
           fs.unlinkSync(imagePath);

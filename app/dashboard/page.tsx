@@ -64,16 +64,16 @@ export default function DashboardPage() {
             <p className="text-sm text-gray-500">{new Date(article.createdAt).toLocaleString()}</p>
             <p className="text-sm break-all text-blue-600 mt-1">{article.sourceUrl}</p>
             {article.localImagePath && (
-              <Image
-                src={article.localImagePath}
+              <img
+                src={`/api${article.localImagePath}`}
                 alt="Article"
                 className="mt-2 max-w-xs border rounded"
                 width={400}
-                priority={true}
                 height={225}
+                loading="lazy"
                 style={{ width: "100%", height: "auto" }}
-              />
-            )}
+              />  
+              )}
             <div className="mt-4">
               <h3 className="font-medium mb-2">Content:</h3>
               <div className="text-sm text-gray-700 whitespace-pre-wrap">
