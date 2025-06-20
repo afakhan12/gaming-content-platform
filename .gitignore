@@ -16,7 +16,9 @@
 # next.js
 /.next/
 /out/
-
+/public/
+/.next/cache/
+/prisma/
 
 # production
 /build

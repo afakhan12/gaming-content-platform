@@ -53,6 +53,8 @@ export async function PUT(
         isBucketed: body.isBucketed,
         Interesting: body.Interesting,
         updatedAt: new Date(),
+        ...(body.translatedX !== undefined && { translatedX: body.translatedX }),
+        ...(body.translatedFacebook !== undefined && { translatedFacebook: body.translatedFacebook }),
       },
     });
 

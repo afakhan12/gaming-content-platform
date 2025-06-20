@@ -33,6 +33,9 @@ export default function TranslationsDashboard() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loadingId, setLoadingId] = useState<{id: number, platform: string} | null>(null);
   const [archiveId, setArchiveId] = useState<number | null>(null);
+  const [editState, setEditState] = useState<{id: number, platform: 'x' | 'facebook'} | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const [editLoading, setEditLoading] = useState(false);
 
   useEffect(() => {
     fetch("/api/articles/translated")
@@ -61,6 +64,24 @@ export default function TranslationsDashboard() {
     await axios.put(`/api/articles/${id}`, { Interesting: false });
     setArticles(prev => prev.filter(a => a.id !== id));
     setArchiveId(null);
+  };
+
+  const startEdit = (id: number, platform: 'x' | 'facebook', current: string) => {
+    setEditState({id, platform});
+    setEditValue(current);
+  };
+
+  const sendEdit = async () => {
+    if (!editState) return;
+    setEditLoading(true);
+    const field = editState.platform === 'x' ? 'translatedX' : 'translatedFacebook';
+    await axios.put(`/api/articles/${editState.id}`, { [field]: editValue });
+    setArticles(prev => prev.map(a =>
+      a.id === editState.id ? { ...a, [field]: editValue } : a
+    ));
+    setEditLoading(false);
+    setEditState(null);
+    setEditValue("");
   };
 
   return (
@@ -98,7 +119,7 @@ export default function TranslationsDashboard() {
             </pre>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex gap-4 flex-wrap">
             <button
               onClick={() => markPosted(article.id, "facebook")}
               disabled={!!article.postedToFacebook || !!(loadingId && loadingId.id === article.id && loadingId.platform === "facebook")}
@@ -120,7 +141,46 @@ export default function TranslationsDashboard() {
             >
               {archiveId === article.id ? "Archiving..." : "Archive"}
             </button>
+            <button
+              onClick={() => startEdit(article.id, 'x', article.translatedX)}
+              className="px-3 py-1 bg-purple-600 text-white rounded transition-colors duration-200 hover:bg-purple-700"
+            >
+              Update X
+            </button>
+            <button
+              onClick={() => startEdit(article.id, 'facebook', article.translatedFacebook)}
+              className="px-3 py-1 bg-blue-900 text-white rounded transition-colors duration-200 hover:bg-blue-800"
+            >
+              Update Facebook
+            </button>
           </div>
+          {editState && editState.id === article.id && (
+            <div className="mt-4 flex flex-col gap-2">
+              <textarea
+                className="w-full border rounded p-2 text-sm"
+                rows={3}
+                value={editValue}
+                onChange={e => setEditValue(e.target.value)}
+                disabled={editLoading}
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={sendEdit}
+                  disabled={editLoading || !editValue.trim()}
+                  className="px-3 py-1 bg-green-600 text-white rounded transition-colors duration-200 hover:bg-green-700 disabled:bg-green-300 disabled:cursor-not-allowed"
+                >
+                  {editLoading ? "Sending..." : "Send"}
+                </button>
+                <button
+                  onClick={() => { setEditState(null); setEditValue(""); }}
+                  disabled={editLoading}
+                  className="px-3 py-1 bg-gray-400 text-white rounded transition-colors duration-200 hover:bg-gray-500"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       ))}
     </div>
