@@ -18,8 +18,7 @@
 /out/
 /public/
 /.next/cache/
-/prisma/
-/tmp/
+
 
 # production
 /build

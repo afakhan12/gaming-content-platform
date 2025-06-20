@@ -66,7 +66,17 @@ export default function BucketPage() {
           <div className="text-sm text-gray-500">🆔 Article ID: {article.id}</div>
           <h2 className="text-lg font-semibold">{article.title}</h2>
           {article.localImagePath && (
-            <Image src={article.localImagePath} alt={article.title} width={600} height={300} />
+            <Image
+              src={`/api${article.localImagePath}`}
+              alt="Article"
+              className="mt-2 max-w-xs border rounded"
+              width={400}
+              height={225}
+              loading="lazy"
+              style={{ width: "100%", height: "auto" }}
+              unoptimized={true}
+              quality={30}
+            />
           )}
           <h2 className="text-xl font-semibold mt-2">{article.title}</h2>
           <p className="text-gray-600">{article.author} – {new Date(article.pubDate).toLocaleString()}</p>
@@ -105,4 +115,4 @@ export default function BucketPage() {
   )
 }
 
-          
+

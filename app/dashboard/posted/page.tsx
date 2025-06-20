@@ -50,11 +50,15 @@ export default function PostedDashboard() {
 
           {article.localImagePath && (
             <Image
-              src={article.localImagePath}
+              src={`/api${article.localImagePath}`}
               alt="Article"
-              width={600}
-              height={400}
-              className="w-full max-w-md h-auto rounded shadow-md"
+              className="mt-2 max-w-xs border rounded"
+              width={400}
+              height={225}
+              loading="lazy"
+              style={{ width: "100%", height: "auto" }}
+              unoptimized={true}
+              quality={30}
             />
           )}
 

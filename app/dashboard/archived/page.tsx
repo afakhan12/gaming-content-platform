@@ -45,7 +45,17 @@ export default function ArchivedPage() {
             <h2 className="text-xl font-semibold">{article.title}</h2>
             <p className="text-sm text-gray-500">{new Date(article.createdAt).toLocaleString()}</p>
             {article.localImagePath && (
-              <Image src={article.localImagePath} alt={article.title} width={600} height={300} className="rounded" />
+              <Image
+                src={`/api${article.localImagePath}`}
+                alt="Article"
+                className="mt-2 max-w-xs border rounded"
+                width={400}
+                height={225}
+                loading="lazy"
+                style={{ width: "100%", height: "auto" }}
+                unoptimized={true}
+                quality={30}
+              />
             )}
             <div className="mt-2">
               <h3 className="font-medium mb-2">Content:</h3>
