@@ -38,20 +38,25 @@ I want you to rephrase articles as Facebook and Twitter posts in *Arabic*, using
 
 Your task:
 1. Read and understand each article in the provided JSON.
-2. Extract the key points and rewrite them in Arabic.
-3. The Arabic content must be well-written and *not a direct translation*.
-4. The *Facebook post should be longer, with more context and storytelling. Use a tone that feels casual and informative — as if you're talking to friends from the Gulf region. End the post with a **question to encourage interaction, and include **1–2 relevant Arabic hashtags* only.
-5. The *Twitter post must be short, catchy, and under 280 characters* — with a clear takeaway or interesting twist. End with a *question* and *1–2 Arabic hashtags* only.
-6. Use simple, clear language in a friendly Gulf Arabic tone (Fusha with Khaleeji flavour). Avoid formal or robotic phrasing.
-7. Do NOT include links or any extra explanation.
+2. If the article is written in a *personal or opinion-based style* (e.g. a review or experience), rewrite it in a *neutral, objective, and news-like tone*, suitable for a wider audience.
+3. Extract the key points and rewrite them in Arabic.
+4. The Arabic content must be well-written and *not a direct translation*.
+5. Begin each post with a *strong hook* that fits the nature of the article (examples: "عاجل", "هام جداً", "خبر حصري", "لا يفوتك", etc.).
+6. The *Facebook post* should be *longer*, with more context and storytelling. It should feel like a casual but informative post someone from the Gulf would write to their friends.
+7. The *Twitter post* must be *short, catchy, and under 280 characters*, focusing on the most interesting or surprising part.
+8. Add *fitting emojis* in both posts to enhance clarity, tone, and engagement (without overusing them).
+9. *End both posts with a question* to encourage interaction.
+10. Include *1–2 relevant Arabic hashtags* at the end of each post.
+11. Use simple, clear language in a friendly Khaleeji-flavoured Arabic (Modern Standard Arabic with regional warmth). Avoid robotic or overly formal tone.
+12. Do NOT include links or any extra explanation.
 
 ⚠ Respond ONLY with a *JSON array* in the following format (no extra text or explanation):
 
 [
   {
     "id": the article ID,
-    "facebook": "Longer Arabic Facebook post here with a question and hashtags...",
-    "twitter": "Short Arabic Twitter post here with a question and hashtags..."
+    "facebook": "Hook + emojis... Longer Arabic Facebook post here with emojis, a question and hashtags...",
+    "twitter": "Hook + emojis... Short Arabic Twitter post here with emojis, a question and hashtags..."
   }
 ]
 Here is the JSON:
