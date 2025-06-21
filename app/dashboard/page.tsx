@@ -38,10 +38,17 @@ export default function DashboardPage() {
 
   const updateArticle = async (id: number, action: 'bucket' | 'ignore') => {
     setLoadingId(id);
-    await axios.put(`/api/articles/${id}`, {
-      isBucketed: action === 'bucket',
-      Interesting: action !== 'ignore'
-    });
+    if (action === 'bucket') {
+      await axios.put(`/api/articles/${id}`, {
+        isBucketed: true,
+        Interesting: true
+      });
+    } else if (action === 'ignore') {
+      await axios.put(`/api/articles/${id}`, {
+        isBucketed: false,
+        Interesting: false
+      });
+    }
     setArticles(prev => prev.filter(a => a.id !== id));
     setLoadingId(null);
   }

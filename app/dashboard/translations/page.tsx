@@ -31,9 +31,9 @@ type Article = {
 
 export default function TranslationsDashboard() {
   const [articles, setArticles] = useState<Article[]>([]);
-  const [loadingId, setLoadingId] = useState<{id: number, platform: string} | null>(null);
+  const [loadingId, setLoadingId] = useState<{ id: number, platform: string } | null>(null);
   const [archiveId, setArchiveId] = useState<number | null>(null);
-  const [editState, setEditState] = useState<{id: number, platform: 'x' | 'facebook'} | null>(null);
+  const [editState, setEditState] = useState<{ id: number, platform: 'x' | 'facebook' } | null>(null);
   const [editValue, setEditValue] = useState("");
   const [editLoading, setEditLoading] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -45,7 +45,7 @@ export default function TranslationsDashboard() {
   }, []);
 
   const markPosted = async (id: number, platform: "facebook" | "x") => {
-    setLoadingId({id, platform});
+    setLoadingId({ id, platform });
     const ok = await publishTo(platform, id); // 🔄 Triggers actual post to platform
     if (!ok) { setLoadingId(null); return; }
     await fetch(`/api/articles/posted`, {
@@ -75,7 +75,7 @@ export default function TranslationsDashboard() {
   };
 
   const startEdit = (id: number, platform: 'x' | 'facebook', current: string) => {
-    setEditState({id, platform});
+    setEditState({ id, platform });
     setEditValue(current);
   };
 
@@ -102,11 +102,15 @@ export default function TranslationsDashboard() {
 
           {article.localImagePath && (
             <Image
-              src={article.localImagePath}
+              src={`/api${article.localImagePath}`}
               alt="Article"
-              width={600}
-              height={400}
-              className="w-full max-w-md h-auto rounded shadow-md"
+              className="mt-2 max-w-xs border rounded"
+              width={400}
+              height={225}
+              loading="lazy"
+              style={{ width: "100%", height: "auto" }}
+              unoptimized={true}
+              quality={30}
             />
           )}
 

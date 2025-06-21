@@ -2,6 +2,7 @@
 import db from "@/db/db";
 import { postToFacebook } from "@/utils/social/postToFacebook";
 import { NextRequest, NextResponse } from "next/server";
+import path from "path";
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,7 +12,7 @@ export async function POST(req: NextRequest) {
       where: { id },
       select: {
         title: true,
-        imageUrl: true,
+        localImagePath: true,
         translatedFacebook: true,
       },
     });
@@ -24,9 +25,13 @@ export async function POST(req: NextRequest) {
       return new NextResponse("Article not translated", { status: 400 });
     }
 
+    let imagePath = "";
+    if (article.localImagePath && article.localImagePath.startsWith("/images/")) {
+      imagePath = path.join(process.cwd(), "tmp", article.localImagePath);
+    }
     await postToFacebook({
       title: article.title,
-      imageUrl: article.imageUrl || "",
+      imageUrl: imagePath,
       translatedFacebook: article.translatedFacebook,
     });
     return NextResponse.json({ success: true });

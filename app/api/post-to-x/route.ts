@@ -1,6 +1,7 @@
 import db from "@/db/db";
 import { postToTwitter } from "@/utils/social/postToTwitter";
 import { NextRequest, NextResponse } from "next/server";
+import path from "path";
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,9 +29,14 @@ export async function POST(req: NextRequest) {
       return new NextResponse("Article has no image", { status: 400 });
     }
 
+    let imagePath = "";
+    if (article.localImagePath && article.localImagePath.startsWith("/images/")) {
+      imagePath = path.join(process.cwd(), "tmp", article.localImagePath);
+    }
+
     await postToTwitter({
       text: article.title,
-      imagePath: article.localImagePath,
+      imagePath: imagePath,
       translatedX: article.translatedX,
     });
     
